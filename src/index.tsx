@@ -1,19 +1,26 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom/client"
+import { withLDProvider } from "launchdarkly-react-client-sdk"
+
+import App from "./App"
+import "./index.css"
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
-);
+)
+
+const WrappedApp = withLDProvider({
+  clientSideID: "my-client-side-id",
+  context: {
+    kind: "multi",
+    user: {
+      key: "my-user-key"
+    },
+  }
+})(App)
+
 root.render(
   <React.StrictMode>
-    <App />
+    <WrappedApp />
   </React.StrictMode>
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+)
