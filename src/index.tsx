@@ -1,26 +1,36 @@
 import React from "react";
 import ReactDOM from "react-dom/client"
-import { withLDProvider } from "launchdarkly-react-client-sdk"
+import { asyncWithLDProvider } from "launchdarkly-react-client-sdk"
 
 import App from "./App"
+import getDeviceContext from "./deviceContext"
+
 import "./index.css"
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-)
+(async () => {
+  const clientSideID = await Promise.resolve("my-client-side-id");
+  // const clientSideID = await fetch("/path/to/my-client-side-id")
+  //   .then(response => response.json())
+  //   .then(response => response.myClientSideID)
+  
+  const device = getDeviceContext()
+  const LDProvider = await asyncWithLDProvider({
+    clientSideID,
+    context: {
+      kind: "multi",
+      device,
+    }
+  })
 
-const WrappedApp = withLDProvider({
-  clientSideID: "my-client-side-id",
-  context: {
-    kind: "multi",
-    user: {
-      key: "my-user-key"
-    },
-  }
-})(App)
-
-root.render(
-  <React.StrictMode>
-    <WrappedApp />
-  </React.StrictMode>
-)
+  const root = ReactDOM.createRoot(
+    document.getElementById('root') as HTMLElement
+  )
+  
+  root.render(
+    <React.StrictMode>
+      <LDProvider>
+        <App />
+      </LDProvider>
+    </React.StrictMode>
+  )
+})()

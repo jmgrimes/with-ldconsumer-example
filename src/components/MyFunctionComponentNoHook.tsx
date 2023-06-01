@@ -21,7 +21,7 @@ const MyFunctionComponent: React.FunctionComponent<MyFunctionComponentProps> = (
                 {
                     !ldClient || !flags ? 
                     "Initializing LaunchDarkly Client..." :
-                    `Flag Value is ${flags.myFlag}` // or call ldClient.variation("myFlag")
+                    `Flag Value is ${flags.myTestBooleanFlag}` // or call ldClient.variation("myFlag")
                 }
             </p>
         </div>
