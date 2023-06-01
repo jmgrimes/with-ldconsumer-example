@@ -1,6 +1,6 @@
-import type { LDContext } from "launchdarkly-js-client-sdk"
+import { LDContext } from "launchdarkly-js-client-sdk"
 import { useLDClient } from "launchdarkly-react-client-sdk"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import { v4 as UUIDv4 } from "uuid"
 import getDeviceContext from "../deviceContext"
 
@@ -9,11 +9,15 @@ import getDeviceContext from "../deviceContext"
 interface LoginComponentProps {}
 
 const LoginComponent: React.FunctionComponent<LoginComponentProps> = () => {
-    const ldClient = useLDClient()
     const [emailAddress, setEmailAddress] = useState<string>();
-    const [context, setContext] = useState<string>(JSON.stringify(ldClient?.getContext() || "{}"))
+    const [context, setContext] = useState<string>();
+    const ldClient = useLDClient()
     
     const device = getDeviceContext()
+
+    useEffect(() => {
+        setContext(JSON.stringify(ldClient?.getContext() || "{}"))
+    }, [ldClient, context])
 
     return (
         <div>
@@ -32,7 +36,7 @@ const LoginComponent: React.FunctionComponent<LoginComponentProps> = () => {
                 </div>
                 <div>
                     <input type="button" value="Login" 
-                        onClick={event => {
+                        onClick={async () => {
                             const newContext: LDContext = {
                                 kind: "multi",
                                 user: {
@@ -47,7 +51,7 @@ const LoginComponent: React.FunctionComponent<LoginComponentProps> = () => {
                                 },
                                 device
                             }
-                            ldClient?.identify(newContext)
+                            await ldClient?.identify(newContext)
                             setContext(JSON.stringify(newContext))
                         }}
                     />
